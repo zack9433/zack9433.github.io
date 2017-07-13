@@ -1,0 +1,661 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="WXoX4esA9D4sJUB_LEUoVA9MiSnb7hwo5bmv3CyfjR0" />
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="testing,unit test," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="筆記一下在做 Test 時對 Mocking 的瞭解">
+<meta name="keywords" content="testing,unit test">
+<meta property="og:type" content="article">
+<meta property="og:title" content="筆記單元測試中的 Mocking">
+<meta property="og:url" content="https://zack9433.github.io/2016/06/03/mocking-for-unit-test/index.html">
+<meta property="og:site_name" content="發懶得 RD 日常">
+<meta property="og:description" content="筆記一下在做 Test 時對 Mocking 的瞭解">
+<meta property="og:image" content="https://zack9433.github.io/images/mocking-objects.png">
+<meta property="og:image" content="https://zack9433.github.io/images/replace-method-with-spy.png">
+<meta property="og:image" content="https://zack9433.github.io/images/intercept-method-with-spy.png">
+<meta property="og:updated_time" content="2016-06-03T07:59:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="筆記單元測試中的 Mocking">
+<meta name="twitter:description" content="筆記一下在做 Test 時對 Mocking 的瞭解">
+<meta name="twitter:image" content="https://zack9433.github.io/images/mocking-objects.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 筆記單元測試中的 Mocking | 發懶得 RD 日常 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-76323855-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">發懶得 RD 日常</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">RD.Code, RD.Complain, RD.Coffee, That's it.</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                筆記單元測試中的 Mocking
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2016-06-03T15:35:49+08:00" content="2016-06-03">
+              2016-06-03
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/03/mocking-for-unit-test/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/06/03/mocking-for-unit-test/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="SUT-和-DOC"><a href="#SUT-和-DOC" class="headerlink" title="SUT 和 DOC"></a>SUT 和 DOC</h1><p>在瞭解 Mocking 前要先大概知道 SUT 和 DOC。</p>
+<ul>
+<li>SUT(System Under Test) 指的是待測程式，可能是個 function 或 object。</li>
+<li>DOC(Depended-on Component)，指的是 SUT 依賴的程式。</li>
+</ul>
+<p>因為要測試的是 SUT 的部份而不是 DOC，所以我們希望對 DOC 進行 Mocking。</p>
+<h1 id="Mocking-DOC-的動機"><a href="#Mocking-DOC-的動機" class="headerlink" title="Mocking DOC 的動機"></a>Mocking DOC 的動機</h1><ul>
+<li>Isolation<br>指的是隔離 DOC</li>
+<li><p>Easy flow control</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 透過 Mocking 可以指定 component.isNew() 回傳的值</span></div><div class="line"><span class="keyword">if</span> (component.isNew()) &#123;</div><div class="line">    insert();</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> &#123;</div><div class="line">    update();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>Remove interaction with complex or external systems<br>例如：DOC 是要去存取 DB 或者網路等等較複雜的動作</p>
+</li>
+<li>Testing interactions<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 透過 Mocking 可以知道 component.insert() 或者 component.update() 有沒有被呼叫</span></div><div class="line">&#123;</div><div class="line">...</div><div class="line"></div><div class="line">    save: <span class="function"><span class="keyword">function</span>(<span class="params">component</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.isNew()) &#123;</div><div class="line">            component.insert();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            component.update();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="Types-of-Mock"><a href="#Types-of-Mock" class="headerlink" title="Types of Mock"></a>Types of Mock</h1><p>大多數的開發者都直æ¥將 Mock Objects 稱為 Mocks，但事實上 Mock Objects 有不同的 Type，根據 <a href="http://www.martinfowler.com/bliki/TestDouble.html" target="_blank" rel="external">Martin Fowler</a>的說法，是將 Mock Objects 稱作 Test Doubles（測試替身），並且有以下分類：</p>
+<ul>
+<li>Dummy</li>
+<li>Fake</li>
+<li>Stub</li>
+<li>Spy</li>
+<li>Mock</li>
+</ul>
+<p>詳細的分別可以參考<a href="http://teddy-chen-tw.blogspot.tw/2014/09/test-double2.html" target="_blank" rel="external">搞笑談軟工此篇</a></p>
+<h1 id="Mock-技巧說明"><a href="#Mock-技巧說明" class="headerlink" title="Mock 技巧說明"></a>Mock 技巧說明</h1><ul>
+<li>Mocking functions<br>這是最基本的 Mock，直接用 Stub 或 Spy 來作一個測試替身</li>
+<li>Mocking Objects<br>針對一個物件來進行 Mock 比較複雜一點，大概有以下方式：<ul>
+<li>手工打造測試替身<br>自行 Coding 打造 Test Double  物件來替代真實的物件，但這個方式有一個麻煩的點，假如真實的物件他的方法或介面有改變，同樣 Test Double 也要修改。</li>
+<li>透過物件的定義來打造<br>因為手工比較麻煩，通常直接用真實物件的 Class 來產生 Test Double。</li>
+</ul>
+</li>
+</ul>
+<p>JavaScript 範例：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 假設有一個 Class A，有兩個 function</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A</span>(<span class="params"></span>) </span>&#123;&#125;</div><div class="line">A.prototype.method1 = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</div><div class="line">A.prototype.method2 = <span class="function"><span class="keyword">function</span>(<span class="params">obj, bool</span>) </span>&#123;&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 手工打造 Test Double 物件</span></div><div class="line"><span class="comment">// 此方法的麻煩就在於必須在測試開始前先額外 codding 來模擬 A</span></div><div class="line"><span class="keyword">var</span> testdouble = &#123;</div><div class="line">  <span class="attr">method1</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;,</div><div class="line">  <span class="attr">method2</span>: <span class="function"><span class="keyword">function</span>(<span class="params">obj, bool</span>) </span>&#123;&#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 假設有一個 Class A，有兩個 function</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">A</span>(<span class="params"></span>) </span>&#123;&#125;</div><div class="line">A.prototype.method1 = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</div><div class="line">A.prototype.method2 = <span class="function"><span class="keyword">function</span>(<span class="params">obj, bool</span>) </span>&#123;&#125;;</div><div class="line"></div><div class="line"><span class="comment">// 透過物件的定義來打造</span></div><div class="line"><span class="comment">// 直接將真實物件視為 Test Double 物件</span></div><div class="line"><span class="comment">// 但假如 A 的建構子有作一些額外的事情的話，有可能會產生一些副作用</span></div><div class="line"><span class="keyword">var</span> testdouble = <span class="keyword">new</span> A();</div></pre></td></tr></table></figure>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>整個 Mocking 的過程，就是從原本定義好的物件<br><img src="/images/mocking-objects.png" alt="Mocking Objects"><br>在透過任何 Mocking 的手段，可能是使用 <code>Sinon</code> 之類的 Mocking Library，來對 function 進行  spy(Test Double) 或其它動作，此時若直接呼叫 function 的話是不會執行原本的動作，而是執行定義 spy function 要作的事情，例如：回傳 true or false 或者字串並追蹤呼叫此 function 次數等等。<br><img src="/images/replace-method-with-spy.png" alt="Replace Method with Spy"><br>另一種方式是在執行的 function 前插入 spy function，這樣除了可以追蹤 function 被呼叫幾次並且執行原本所定義的動作。<br><img src="/images/intercept-method-with-spy.png" alt="Intercept Method with Spy"><br>最後要記得的是我們不是針對 SUT 來進行 Mocking 而是針對 DOC 來進行 Mocking。</p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/testing/" rel="tag">#testing</a>
+          
+            <a href="/tags/unit-test/" rel="tag">#unit test</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/30/why-neovim/" rel="next" title="從 VIM 到 Neovim 的原因">
+                <i class="fa fa-chevron-left"></i> 從 VIM 到 Neovim 的原因
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/17/fetch-pull-request-to-local-just-for-test/" rel="prev" title="抓取 pull request 到 local 測試">
+                抓取 pull request 到 local 測試 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://secure.gravatar.com/avatar/f56f0914fead2d6040a68b9fff0f39be"
+               alt="Zack Yang" />
+          <p class="site-author-name" itemprop="name">Zack Yang</p>
+          <p class="site-description motion-element" itemprop="description">RD 日常的 murmur</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">標籤</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/zack9433" target="_blank" title="github">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/zack9433" target="_blank" title="twitter">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SUT-和-DOC"><span class="nav-number">1.</span> <span class="nav-text">SUT 和 DOC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mocking-DOC-的動機"><span class="nav-number">2.</span> <span class="nav-text">Mocking DOC 的動機</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Types-of-Mock"><span class="nav-number">3.</span> <span class="nav-text">Types of Mock</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mock-技巧說明"><span class="nav-number">4.</span> <span class="nav-text">Mock 技巧說明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#結論"><span class="nav-number">5.</span> <span class="nav-text">結論</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zack Yang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'zack9433';
+      var disqus_identifier = '2016/06/03/mocking-for-unit-test/';
+      var disqus_title = '筆記單元測試中的 Mocking';
+      var disqus_url = 'https://zack9433.github.io/2016/06/03/mocking-for-unit-test/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

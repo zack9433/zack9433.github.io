@@ -1,0 +1,725 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="WXoX4esA9D4sJUB_LEUoVA9MiSnb7hwo5bmv3CyfjR0" />
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="angular,ngrx,redux," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="主要筆記觀看 State in Angular Applications 的影片">
+<meta name="keywords" content="angular,ngrx,redux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="state-in-angular-applications-notes">
+<meta property="og:url" content="https://zack9433.github.io/2017/07/13/state-in-angular-applications-notes/index.html">
+<meta property="og:site_name" content="發懶得 RD 日常">
+<meta property="og:description" content="主要筆記觀看 State in Angular Applications 的影片">
+<meta property="og:image" content="https://zack9433.github.io/images/state-synchronization.png">
+<meta property="og:image" content="https://zack9433.github.io/images/fail-case.png">
+<meta property="og:image" content="https://zack9433.github.io/images/ad-hoc-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/race-condition-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/filter-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/ad-hoc-2.png">
+<meta property="og:image" content="https://zack9433.github.io/images/race-condition-2.png">
+<meta property="og:image" content="https://zack9433.github.io/images/state-separate-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/service-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/reducer-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/effect-1.png">
+<meta property="og:image" content="https://zack9433.github.io/images/reducer-2.png">
+<meta property="og:image" content="https://zack9433.github.io/images/optimistic-update-flow.png">
+<meta property="og:image" content="https://zack9433.github.io/images/component-with-store.png">
+<meta property="og:image" content="https://zack9433.github.io/images/url-and-client-state-chnage-flow.png">
+<meta property="og:image" content="https://zack9433.github.io/images/effect-2.png">
+<meta property="og:image" content="https://zack9433.github.io/images/reducer-3.png">
+<meta property="og:image" content="https://zack9433.github.io/images/overall-interaction-flow.png">
+<meta property="og:updated_time" content="2017-07-13T05:22:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="state-in-angular-applications-notes">
+<meta name="twitter:description" content="主要筆記觀看 State in Angular Applications 的影片">
+<meta name="twitter:image" content="https://zack9433.github.io/images/state-synchronization.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> state-in-angular-applications-notes | 發懶得 RD 日常 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-tw">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-76323855-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">發懶得 RD 日常</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">RD.Code, RD.Complain, RD.Coffee, That's it.</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首頁
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            歸檔
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            標籤
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                state-in-angular-applications-notes
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">發表於</span>
+            <time itemprop="dateCreated" datetime="2017-07-13T11:10:03+08:00" content="2017-07-13">
+              2017-07-13
+            </time>
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/07/13/state-in-angular-applications-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/07/13/state-in-angular-applications-notes/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>前一陣子在 Angular 的 Community 有舉辦一個在船上的 <a href="https://ngcruise.com/" target="_blank" rel="external">Conference</a>，最近在 YouTube 可以看到 Conference 的內容了，此篇主要筆記一下在 Application 裡會有那些 State 需要處理。</p>
+</blockquote>
+<h1 id="Type-of-State"><a href="#Type-of-State" class="headerlink" title="Type of State"></a>Type of State</h1><ul>
+<li>Server State<ul>
+<li>存在 Server 端的資料</li>
+</ul>
+</li>
+<li>Persistent State<ul>
+<li>Server State 的子集，透過網路存取而來</li>
+</ul>
+</li>
+<li>Client State<ul>
+<li>State 不存在 Server 端，例如：透過 Input 來作 filter 的功能，在 Input 輸入的值就是一種  Client State</li>
+<li>Recommendation: It’s good practice to reflect both the persistent and client state in the URL. 這表示你可以透過分享網址給其他人並且保留同一個 State</li>
+</ul>
+</li>
+<li>URL or Router State<ul>
+<li>透過 URL 紀錄當前的 State，當頁面重整後可依據目前的 URL 還原 State</li>
+</ul>
+</li>
+<li>Transient Client State<ul>
+<li>不會透過 URL 來紀錄，但如果使用者換頁後在切回來，還是會回到先前的 State，但是如果透過網址分享出去給另一個使用者，是無法還原 State，例如：看 YouTube 影片看到一半，切換到另一部影片，然後在切回來看，是可以從上次觀看的地方繼續觀看，但如果分享此影片給其他人，其他人都是會從頭開始觀看</li>
+</ul>
+</li>
+<li>Local UI State<ul>
+<li>獨立的 Component 或是 Directive 有時會有自己的 State，例如：紀錄當前 Component Active 的顏色。Local UI State 是可以做成 mutable，不一定要 immutable。</li>
+</ul>
+</li>
+</ul>
+<h1 id="State-Synchronization"><a href="#State-Synchronization" class="headerlink" title="State Synchronization"></a>State Synchronization</h1><p><img src="/images/state-synchronization.png" alt="State Synchronization"></p>
+<h2 id="Syncing-Server-and-Persistent-State"><a href="#Syncing-Server-and-Persistent-State" class="headerlink" title="Syncing Server and Persistent State"></a>Syncing Server and Persistent State</h2><p><img src="/images/fail-case.png" alt="Fail Case"></p>
+<p>前端狀態的 talk 會被 rate 過，但後端狀態是沒有 rate，呈現 Server State 和 Persistent State不同步的狀態。Workaround 的解法如下：</p>
+<p><img src="/images/ad-hoc-1.png" alt="Ad-hoc 1"></p>
+<p>但這解法對於在多個 Request 並且沒辦法保證回應順序下還是會遇到狀態不同步的問題。</p>
+<p><img src="/images/race-condition-1.png" alt="Race Condition"></p>
+<h2 id="Syncing-URL-and-Client-State"><a href="#Syncing-URL-and-Client-State" class="headerlink" title="Syncing URL and Client State"></a>Syncing URL and Client State</h2><p>假設要作一個 filter 的功能，一開始設計如下：</p>
+<p><img src="/images/filter-1.png" alt="Feature Filter"></p>
+<p>但當我們重整頁面後，我們先前所 filter 出來的資料就消失了，我們也沒辦法透過網址分享給其他人我們所 filter 出來的結果，所以我們加上了 Workaround 的解法，如下：</p>
+<p><img src="/images/ad-hoc-2.png" alt="Ad-hoc 2"></p>
+<p>但這解法在遇到很快的切換頁面時還是會遇到問題，如下：</p>
+<p><img src="/images/race-condition-2.png" alt="Race Condition"></p>
+<p>以上這些因為由 Response 回應順序的問題，是很難從 Unit Test 得知的。我們可以歸納犯了以下的錯誤：</p>
+<h2 id="Mistakes"><a href="#Mistakes" class="headerlink" title="Mistakes"></a>Mistakes</h2><ul>
+<li>State management and side effects aren’t separated.</li>
+<li>No clear sync strategy of the persistent state and the server.</li>
+<li>No clear sync strategy of the client state and the URL</li>
+<li>Our model is mutable</li>
+</ul>
+<h1 id="Separating-State-Management"><a href="#Separating-State-Management" class="headerlink" title="Separating State Management"></a>Separating State Management</h1><blockquote>
+<p>Rule: Separate services/computation from state management.</p>
+</blockquote>
+<p><img src="/images/state-separate-1.png" alt="Separating State"></p>
+<p>Store 負責管理 State，當 component 分派 action 來，Store 會複製目前 State 並產生新的 State。Effect 也可以去監聽那些 Action 並針對此 Action 去執行 Side Effect 的動作，例如向後端 server 傳送資料等等，讓後端與前端作一次 Sync。</p>
+<p><img src="/images/service-1.png" alt="Backend Service"><br><img src="/images/reducer-1.png" alt="Reducer"></p>
+<blockquote>
+<p>Rule: Use immutable data for persistent and client state</p>
+</blockquote>
+<p>使用 immutable data 的好處是我們可以保證 State 在系統內的一致性，也能做到 undo 的動作。通常資料是會分享到其他 Component 或者是 Server 端的時候，最好是保持 immutable 的特性。</p>
+<p><img src="/images/effect-1.png" alt="Effect"></p>
+<p>透過 Effect 來作 state sync，另外用 switchmap 來避免回應順序的問題</p>
+<p><img src="/images/reducer-2.png" alt="Reducer"><br><img src="/images/optimistic-update-flow.png" alt="Optimistic Update Flow"></p>
+<blockquote>
+<p>Rule: Optimistic updates require separate actions to deal with errors.</p>
+</blockquote>
+<h1 id="Synchronizing-URL-and-Client-State"><a href="#Synchronizing-URL-and-Client-State" class="headerlink" title="Synchronizing URL and Client State"></a>Synchronizing URL and Client State</h1><p>當有 URL 改變的時候會去觸發 Reducer 或者 State change</p>
+<blockquote>
+<p>Rule: Always treat Router as the source of truth.</p>
+</blockquote>
+<p><img src="/images/component-with-store.png" alt="Component with Store"><br><img src="/images/url-and-client-state-chnage-flow.png" alt="URL and Client State Change Flow"><br><img src="/images/effect-2.png" alt="Effect"></p>
+<p>Store updates its state</p>
+<p><img src="/images/reducer-3.png" alt="Reducer"></p>
+<p>Overall Interaction:</p>
+<p><img src="/images/overall-interaction-flow.png" alt="Overall Interaction Flow"></p>
+<h1 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis:"></a>Analysis:</h1><ul>
+<li>Updating via UI or via Location is the same.</li>
+<li>Components dispatch actions and react to state changes</li>
+<li>No race conditions (switchmap)</li>
+</ul>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><ul>
+<li>Ad-hoc solutions do not fully work</li>
+<li>To fix the issues we:<ul>
+<li>Switched to using NgRx and immutable data</li>
+<li>Made Router the source of truth</li>
+</ul>
+</li>
+<li>Main takeaway: be deliberate about how you manage state</li>
+</ul>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/angular/" rel="tag">#angular</a>
+          
+            <a href="/tags/ngrx/" rel="tag">#ngrx</a>
+          
+            <a href="/tags/redux/" rel="tag">#redux</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/20/npm-script-tip-for-pass-variable-to-another-task/" rel="next" title="透過 npm script 執行相依任務，並透過 npm config 傳值的小技巧">
+                <i class="fa fa-chevron-left"></i> 透過 npm script 執行相依任務，並透過 npm config 傳值的小技巧
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目錄
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            本站概覽
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://secure.gravatar.com/avatar/f56f0914fead2d6040a68b9fff0f39be"
+               alt="Zack Yang" />
+          <p class="site-author-name" itemprop="name">Zack Yang</p>
+          <p class="site-description motion-element" itemprop="description">RD 日常的 murmur</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">文章</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">標籤</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/zack9433" target="_blank" title="github">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/zack9433" target="_blank" title="twitter">
+                  
+                    <i class="fa fa-globe"></i>
+                  
+                  twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="http://creativecommons.org/licenses/by-nc-sa/4.0" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Type-of-State"><span class="nav-number">1.</span> <span class="nav-text">Type of State</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#State-Synchronization"><span class="nav-number">2.</span> <span class="nav-text">State Synchronization</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Syncing-Server-and-Persistent-State"><span class="nav-number">2.1.</span> <span class="nav-text">Syncing Server and Persistent State</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Syncing-URL-and-Client-State"><span class="nav-number">2.2.</span> <span class="nav-text">Syncing URL and Client State</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mistakes"><span class="nav-number">2.3.</span> <span class="nav-text">Mistakes</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Separating-State-Management"><span class="nav-number">3.</span> <span class="nav-text">Separating State Management</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Synchronizing-URL-and-Client-State"><span class="nav-number">4.</span> <span class="nav-text">Synchronizing URL and Client State</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Analysis"><span class="nav-number">5.</span> <span class="nav-text">Analysis:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Summary"><span class="nav-number">6.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zack Yang</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 強力驅動
+</div>
+
+<div class="theme-info">
+  主題 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+    <script type="text/javascript">
+      var disqus_shortname = 'zack9433';
+      var disqus_identifier = '2017/07/13/state-in-angular-applications-notes/';
+      var disqus_title = 'state-in-angular-applications-notes';
+      var disqus_url = 'https://zack9433.github.io/2017/07/13/state-in-angular-applications-notes/';
+
+      function run_disqus_script(disqus_script){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      }
+
+      run_disqus_script('count.js');
+      
+        run_disqus_script('embed.js');
+      
+    </script>
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
